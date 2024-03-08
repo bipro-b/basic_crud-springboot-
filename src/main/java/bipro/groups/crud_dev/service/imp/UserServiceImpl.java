@@ -57,5 +57,12 @@ public class UserServiceImpl implements UserService {
         return UserMapper.mapToUserDto(updatedUserObj);
     }
 
+    @Override
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                ()-> new ResourceNotFoundException("This is not valid")
+        );
 
+        userRepository.deleteById(userId);
+    }
 }

@@ -9,10 +9,13 @@ import bipro.groups.crud_dev.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @AllArgsConstructor
-public class UserEmployeeImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
     @Override
@@ -29,6 +32,29 @@ public class UserEmployeeImpl implements UserService {
                 .orElseThrow(()
                         -> new ResourceNotFoundException("Employee is not found"));
         return UserMapper.mapToUserDto(user);
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+
+        List<User> users = userRepository.findAll();
+
+        return users.stream().map((user)-> UserMapper.mapToUserDto(user))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDto updateUser(Long userId,UserDto updatedUser ) {
+        User user = userRepository.findById(userId).orElseThrow(
+                ()-> new ResourceNotFoundException("Not found user"));
+
+        user.setFirstName(updatedUser.getFirstName());
+        user.setLastName(updatedUser.getLastName());
+        user.setEmail(updatedUser.getEmail());
+
+        User updatedUserObj = userRepository.save(user);
+
+        return UserMapper.mapToUserDto(updatedUserObj);
     }
 
 
